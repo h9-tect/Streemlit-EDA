@@ -15,7 +15,7 @@ CSV_URL = st.text_input('Enter CSV URL')
 
 # Load CSV data
 try:
-    data = pd.read_csv(CSV_URL)
+    data = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/tesla-stock-price.csv')
 except:
     st.warning('Invalid CSV URL. Please enter a valid CSV URL.')
     st.stop()
