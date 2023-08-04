@@ -14,12 +14,11 @@ st.title('Tesla Stock Volume Analysis')
 CSV_URL = st.text_input('Enter CSV URL')
 
 # Load CSV data
-if CSV_URL:
-    try:
-        data = pd.read_csv(CSV_URL)
-    except:
-        st.warning('Invalid CSV URL. Please enter a valid CSV URL.')
-        st.stop()
+try:
+    data = pd.read_csv(CSV_URL)
+except:
+    st.warning('Invalid CSV URL. Please enter a valid CSV URL.')
+    st.stop()
 
     # Perform EDA using pandas_profiling and Mito Spreadsheet
     report = pp.ProfileReport(data)
