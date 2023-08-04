@@ -1,13 +1,12 @@
 import streamlit as st
 from mitosheet.streamlit.v1 import spreadsheet
 import pandas as pd
-import plotly.express as px
 
 # Set the page layout to wide
 st.set_page_config(layout="wide")
 
 # Set the title of the app
-st.title('CSV Data Analysis with Mito Spreadsheet and Plotly')
+st.title('CSV Data Analysis with Mito Spreadsheet')
 
 # Allow the user to enter the CSV link
 csv_url = st.text_input("Enter CSV URL", "")
@@ -30,11 +29,6 @@ if csv_url:
         # Display the Mito spreadsheet for more interactive analysis
         st.subheader('Interactive Data Analysis')
         new_dfs, code = spreadsheet(df)
-
-        # Data visualization using Plotly
-        st.subheader('Data Visualization')
-        fig = px.line(df, x='Date', y='Volume', title='Tesla Stock Volume over Time')
-        st.plotly_chart(fig)
 
         # Display the code (optional)
         if st.checkbox('Show code'):
@@ -42,13 +36,12 @@ if csv_url:
 import streamlit as st
 from mitosheet.streamlit.v1 import spreadsheet
 import pandas as pd
-import plotly.express as px
 
 # Set the page layout to wide
 st.set_page_config(layout="wide")
 
 # Set the title of the app
-st.title('CSV Data Analysis with Mito Spreadsheet and Plotly')
+st.title('CSV Data Analysis with Mito Spreadsheet')
 
 # Allow the user to enter the CSV link
 csv_url = st.text_input("Enter CSV URL", "")
@@ -71,11 +64,6 @@ if csv_url:
         # Display the Mito spreadsheet for more interactive analysis
         st.subheader('Interactive Data Analysis')
         new_dfs, code = spreadsheet(df)
-
-        # Data visualization using Plotly
-        st.subheader('Data Visualization')
-        fig = px.line(df, x='Date', y='Volume', title='Tesla Stock Volume over Time')
-        st.plotly_chart(fig)
 
         # Display the code (optional)
         if st.checkbox('Show code'):
