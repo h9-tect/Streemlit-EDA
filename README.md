@@ -41,6 +41,7 @@ The app will then open in your browser.
 4. Click the "Load Data" button.
 5. Explore and analyze the data interactively.
 
+# the app on streamlit [LINK](https://streemlit-eda-dq9xedxu45ccldl2my4u5d.streamlit.app/)
 ## Documentation
 
 * [Streamlit documentation](https://docs.streamlit.io/en/stable/)
