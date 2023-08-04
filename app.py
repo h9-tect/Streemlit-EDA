@@ -8,17 +8,18 @@ from streamlit_pandas_profiling import st_profile_report
 st.set_page_config(layout="wide")
 
 # Set page title
-st.title('Mito EDA')
+st.title('Mito spreadsheet EDA')
 
 # Get CSV URL from user input
 CSV_URL = st.text_input('Enter CSV URL')
 
-# Load CSV data
-try:
-    data = pd.read_csv(CSV_URL)
-except:
-    st.warning('Invalid CSV URL. Please enter a valid CSV URL.')
-    st.stop()
+if CSV_URL:
+    # Load CSV data
+    try:
+        data = pd.read_csv(CSV_URL)
+    except:
+        st.warning('Invalid CSV URL. Please enter a valid CSV URL.')
+        st.stop()
 
     # Perform EDA using pandas_profiling and Mito Spreadsheet
     report = pp.ProfileReport(data)
