@@ -1,5 +1,4 @@
-# Streemlit-EDA
-CSV Data Analysis with Mito Spreadsheet
+# CSV Data Analysis with Mito Spreadsheet
 This app allows you to analyze CSV data with Mito Spreadsheet. Mito Spreadsheet is a powerful tool that allows you to interactively explore and analyze your data.
 
 To use the app, you will need to provide a URL to a CSV file. The app will then load the data and display it in a Mito Spreadsheet. You can then use the spreadsheet to explore and analyze the data.
