@@ -1,106 +1,32 @@
-# Streamlit-Google Sheet
-## Modules
-import streamlit as st 
-from pandas import DataFrame
+import streamlit as st
+import pandas as pd
+import pandas_profiling as pp
+from mitosheet.streamlit.v1 import spreadsheet
+from streamlit_pandas_profiling import st_profile_report
 
-from gspread_pandas import Spread,Client
-from google.oauth2 import service_account
+# Set page layout
+st.set_page_config(layout="wide")
 
-# Application Related Module
-import pubchempy as pcp
-from pysmiles import read_smiles
-# 
-import networkx as nx
-import matplotlib.pyplot as plt
+# Set page title
+st.title('Tesla Stock Volume Analysis')
 
-from datetime import datetime
+# Get CSV URL from user input
+CSV_URL = st.text_input('Enter CSV URL')
 
-# Disable certificate verification (Not necessary always)
-import ssl
-ssl._create_default_https_context = ssl._create_unverified_context
+# Load CSV data
+if CSV_URL:
+    try:
+        data = pd.read_csv(CSV_URL)
+    except:
+        st.warning('Invalid CSV URL. Please enter a valid CSV URL.')
+        st.stop()
 
-# Create a Google Authentication connection object
-scope = ['https://spreadsheets.google.com/feeds',
-         'https://www.googleapis.com/auth/drive']
+    # Perform EDA using pandas_profiling and Mito Spreadsheet
+    report = pp.ProfileReport(data)
+    new_dfs, code = spreadsheet(report.to_widgets())
 
-credentials = service_account.Credentials.from_service_account_info(
-                st.secrets["gcp_service_account"], scopes = scope)
-client = Client(scope=scope,creds=credentials)
-spreadsheetname = "Database"
-spread = Spread(spreadsheetname,client = client)
-
-# Check the connection
-st.write(spread.url)
-
-sh = client.open(spreadsheetname)
-worksheet_list = sh.worksheets()
-
-# Functions 
-@st.cache()
-# Get our worksheet names
-def worksheet_names():
-    sheet_names = []   
-    for sheet in worksheet_list:
-        sheet_names.append(sheet.title)  
-    return sheet_names
-
-# Get the sheet as dataframe
-def load_the_spreadsheet(spreadsheetname):
-    worksheet = sh.worksheet(spreadsheetname)
-    df = DataFrame(worksheet.get_all_records())
-    return df
-
-# Update to Sheet
-def update_the_spreadsheet(spreadsheetname,dataframe):
-    col = ['Compound CID','Time_stamp']
-    spread.df_to_sheet(dataframe[col],sheet = spreadsheetname,index = False)
-    st.sidebar.info('Updated to GoogleSheet')
-
-
-st.header('Streamlit Chemical Inventory')
-
-# Check whether the sheets exists
-what_sheets = worksheet_names()
-#st.sidebar.write(what_sheets)
-ws_choice = st.sidebar.radio('Available worksheets',what_sheets)
-
-# Load data from worksheets
-df = load_the_spreadsheet(ws_choice)
-# Show the availibility as selection
-select_CID = st.sidebar.selectbox('CID',list(df['Compound CID']))
-
-# Now we can use the pubchempy module to dump information
-comp = pcp.Compound.from_cid(select_CID)
-comp_dict = comp.to_dict() # Converting to a dictinoary
-# What Information look for ?
-options = ['molecular_weight' ,'molecular_formula',
-           'charge','atoms','elements','bonds']
-show_me = st.radio('What you want to see?',options)
-
-st.info(comp_dict[show_me])
-name = comp_dict['iupac_name']
-st.markdown(name)
-plot = st.checkbox('Canonical Smiles Plot')
-
-if plot:
-    sm = comp_dict['canonical_smiles']
-    mol = read_smiles(comp_dict['canonical_smiles']) 
-    elements = nx.get_node_attributes(mol, name = "element")
-    nx.draw(mol, with_labels=True, labels = elements, pos=nx.spring_layout(mol))
-    fig , ax = plt.subplots()
-    nx.draw(mol, with_labels=True, labels = elements, pos = nx.spring_layout(mol))
-    st.pyplot(fig)
-
-add = st.sidebar.checkbox('Add CID')
-if add :  
-    cid_entry = st.sidebar.text_input('New CID')
-    confirm_input = st.sidebar.button('Confirm')
-    
-    if confirm_input:
-        now = datetime.now()
-        opt = {'Compound CID': [cid_entry],
-              'Time_stamp' :  [now]} 
-        opt_df = DataFrame(opt)
-        df = load_the_spreadsheet('Pending CID')
-        new_df = df.append(opt_df,ignore_index=True)
-        update_the_spreadsheet('Pending CID',new_df)
+    # Display EDA report
+    st_profile_report(new_dfs)
+    st.code(code)
+else:
+    st.warning('Please enter a CSV URL.')
