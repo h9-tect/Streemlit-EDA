@@ -1,32 +1,76 @@
 import streamlit as st
-import pandas as pd
-import pandas_profiling as pp
 from mitosheet.streamlit.v1 import spreadsheet
-from streamlit_pandas_profiling import st_profile_report
+import pandas as pd
 
-# Set page layout
+# Set the page layout to wide
 st.set_page_config(layout="wide")
 
-# Set page title
-st.title('Mito spreadsheet EDA')
+# Set the title of the app
+st.title('CSV Data Analysis with Mito Spreadsheet')
 
-# Get CSV URL from user input
-CSV_URL = st.text_input('Enter CSV URL')
+# Allow the user to enter the CSV link
+csv_url = st.text_input("Enter CSV URL", "")
 
-if CSV_URL:
-    # Load CSV data
+# Load the CSV file if a valid URL is provided
+if csv_url:
     try:
-        data = pd.read_csv(CSV_URL)
-    except:
-        st.warning('Invalid CSV URL. Please enter a valid CSV URL.')
+        df = pd.read_csv(csv_url)
+
+        # Show raw data
+        if st.checkbox('Show raw data'):
+            st.write(df)
+
+        # Data preprocessing (optional)
+        # ...
+
+        # Interactive filters (optional)
+        # ...
+
+        # Display the Mito spreadsheet for more interactive analysis
+        st.subheader('Interactive Data Analysis')
+        new_dfs, code = spreadsheet(df)
+
+        # Display the code (optional)
+        if st.checkbox('Show code'):
+            st.code("""
+import streamlit as st
+from mitosheet.streamlit.v1 import spreadsheet
+import pandas as pd
+
+# Set the page layout to wide
+st.set_page_config(layout="wide")
+
+# Set the title of the app
+st.title('CSV Data Analysis with Mito Spreadsheet')
+
+# Allow the user to enter the CSV link
+csv_url = st.text_input("Enter CSV URL", "")
+
+# Load the CSV file if a valid URL is provided
+if csv_url:
+    try:
+        df = pd.read_csv(csv_url)
+
+        # Show raw data
+        if st.checkbox('Show raw data'):
+            st.write(df)
+
+        # Data preprocessing (optional)
+        # ...
+
+        # Interactive filters (optional)
+        # ...
+
+        # Display the Mito spreadsheet for more interactive analysis
+        st.subheader('Interactive Data Analysis')
+        new_dfs, code = spreadsheet(df)
+
+        # Display the code (optional)
+        if st.checkbox('Show code'):
+            st.code(code)
+    except Exception as e:
+        st.error("Error: Invalid CSV URL or unable to load the data.")
         st.stop()
-
-    # Perform EDA using pandas_profiling and Mito Spreadsheet
-    report = pp.ProfileReport(data)
-    new_dfs, code = spreadsheet(report.to_widgets())
-
-    # Display EDA report
-    st_profile_report(new_dfs)
-    st.code(code)
-else:
-    st.warning('Please enter a CSV URL.')
+            """)
+    except Exception as e:
+        st.error("Error: Invalid CSV URL or unable to load the data.")
